@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import AnalyzeButton from "./AnalyzeButton";
+import GenerateImageButton from "./GenerateImageButton";
 
 type ReportPageProps = {
   params: Promise<{
@@ -21,6 +22,12 @@ export default async function DynamicReportPage({ params }: ReportPageProps) {
     .from("ProjectImages")
     .select("*")
     .eq("project_id", id);
+
+  const { data: generatedImages } = await supabase
+  .from("GeneratedImages")
+  .select("*")
+  .eq("project_id", id)
+  .order("created_at", { ascending: false });
 
 const { data: analyses } = await supabase
   .from("ProjectAnalyses")
@@ -124,14 +131,44 @@ const latestAnalysis = analyses?.[0];
 
           {images && images.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-3">
-              {images.map((image) => (
-                <img
-                  key={image.id}
-                  src={image.image_url}
-                  alt="Photo du bien"
-                  className="h-56 w-full rounded-xl object-cover"
-                />
-              ))}
+             {images.map((image) => (
+  <div key={image.id}>
+    <img
+      src={image.image_url}
+      alt="Photo du bien"
+      className="h-56 w-full rounded-xl object-cover"
+    />
+
+    <GenerateImageButton
+      projectId={project.id}
+      sourceImageUrl={image.image_url}
+    />
+  </div>
+))}
+<section className="mb-8 rounded-2xl bg-white p-8 shadow-sm">
+  <h2 className="mb-6 text-2xl font-bold">Images après rénovation</h2>
+
+  {generatedImages && generatedImages.length > 0 ? (
+    <div className="grid gap-8">
+      {generatedImages.map((image) => (
+        <div key={image.id}>
+          <img
+            src={image.generated_image_url}
+            alt="Image après rénovation"
+            className="max-h-[700px] w-full rounded-xl object-contain"
+          />
+          <p className="mt-2 text-sm font-semibold text-[#5f6f65]">
+            Style : {image.style}
+          </p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-[#5f6f65]">
+      Aucune image générée pour le moment.
+    </p>
+  )}
+</section>
             </div>
           ) : (
             <p className="text-[#5f6f65]">Aucune photo ajoutée.</p>
