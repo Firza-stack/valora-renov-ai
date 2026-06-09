@@ -30,19 +30,33 @@ export async function POST(request: Request) {
     });
 
     const prompt = `
-Transforme cette photo immobilière en projection après rénovation.
+Transforme cette photo immobilière en projection après rénovation photoréaliste.
 
 Style : ${style}
 
+Priorité absolue :
+- conserver exactement la perspective de la photo source
+- conserver l’angle de caméra
+- conserver la profondeur de la pièce
+- conserver les proportions, murs, ouvertures, fenêtres, portes, plafond et sol
+- ne pas changer la disposition générale
+- ne pas inventer une nouvelle pièce
+
+Améliorations autorisées :
+- moderniser les sols
+- repeindre les murs
+- améliorer l’éclairage
+- ajouter du mobilier cohérent
+- ajouter de la décoration dans le style demandé
+- rendre le bien plus attractif pour une revente immobilière
+
 Contraintes :
-- garder la même pièce
-- garder la même perspective
-- garder les murs, fenêtres et volumes principaux
-- moderniser les sols, murs, éclairage, mobilier et décoration
 - rendu photoréaliste
 - pas de texte
-- pas de montage type flyer
-- résultat réaliste pour une revente immobilière
+- pas de flyer
+- pas de plan 3D
+- pas de vue grand angle artificielle
+- conserver une image crédible d’intérieur réel
 `;
 
     const response = await openai.images.edit({
